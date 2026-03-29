@@ -7,9 +7,9 @@ service cloud.firestore {
     }
 
     match /households/{householdId} {
-      allow read: if isMember(householdId);
+      allow read: if request.auth != null && request.auth.uid in resource.data.members;
       allow create: if request.auth != null;
-      allow update: if isMember(householdId);
+      allow update: if request.auth != null && request.auth.uid in resource.data.members;
 
       match /items/{itemId} {
         allow read, write: if isMember(householdId);

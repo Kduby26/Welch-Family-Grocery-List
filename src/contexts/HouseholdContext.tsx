@@ -43,16 +43,23 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
     }
 
     setLoading(true);
-    const list = await getUserHouseholds(user.uid);
-    setHouseholds(list);
+    try {
+      const list = await getUserHouseholds(user.uid);
+      setHouseholds(list);
 
-    const savedId = localStorage.getItem(STORAGE_KEY);
-    const active =
-      list.find((h) => h.id === savedId) ?? list[0] ?? null;
+      const savedId = localStorage.getItem(STORAGE_KEY);
+      const active =
+        list.find((h) => h.id === savedId) ?? list[0] ?? null;
 
-    setHousehold(active);
-    if (active) localStorage.setItem(STORAGE_KEY, active.id);
-    setLoading(false);
+      setHousehold(active);
+      if (active) localStorage.setItem(STORAGE_KEY, active.id);
+    } catch (err) {
+      console.error('Failed to load households:', err);
+      setHouseholds([]);
+      setHousehold(null);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
